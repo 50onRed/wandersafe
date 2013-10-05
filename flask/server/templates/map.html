@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Wandersafe Map</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <style>
+      html, body, #map-canvas {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+      }
+    </style>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+    <script>
+var map;
+function initialize() {
+  var myLoc = new google.maps.LatLng({{ lat }}, {{ long }});
+  var mapOptions = {
+    zoom: 15,
+    center: myLoc,
+    mapTypeId: google.maps.MapTypeId.ROADMAP
+  };
+  map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+  new google.maps.Marker({position: myLoc, map: map, title: 'You are here'});
+  {% for crime in crimes %}
+  new google.maps.Marker({position: new google.maps.LatLng({{ crime.location.lat }}, {{ crime.location.lon }}), map: map, title: '{{ crime.text_general_code }}'});
+  {% endfor %}
+}
+google.maps.event.addDomListener(window, 'load', initialize);
+    </script>
+  </head>
+  <body>
+    <div id="map-canvas"></div>
+  </body>
+</html>
