@@ -1,6 +1,9 @@
 from flask import request, render_template
 from .stackmob import get_crime_near
 
+def index():
+    return render_template("index.html")
+
 def tell_me_if_im_going_to_die(lat, lon, meters):
     lat, lon, meters = float(lat), float(lon), float(meters)
     response = get_crime_near(lat, lon, meters)
