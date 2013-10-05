@@ -8,7 +8,7 @@
 <body>
   <img src="static/wandersafe-logo.png" alt="WanderSafe" style="position: absolute; left: 50%; top: 50%; margin-top: -80.5px; margin-left: -374.5px;">
   <script>
-    if (navigator.geoLocation) {
+    if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function(position) {
             location.href = '/map/' + position.coords.latitude + '/' + position.coords.longitude + '/1000';
         });
