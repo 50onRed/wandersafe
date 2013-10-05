@@ -1,4 +1,4 @@
-from flask import Blueprints
+from flask import Blueprint
 
 wandersafe = Blueprint('wandersafe', __name__)
 

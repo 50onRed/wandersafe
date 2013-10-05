@@ -31,3 +31,6 @@ build/
 local.properties
 project.properties
 .DS_Store
+
+#Python stuff
+*.pyc
