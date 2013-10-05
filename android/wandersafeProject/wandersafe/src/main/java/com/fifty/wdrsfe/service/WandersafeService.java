@@ -30,17 +30,30 @@ public class WandersafeService extends Service implements LocationListener {
 
     private final static String BASE_URL = "";
 
-    private LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+    //TODO - Configure the radius / alert threshold
+    private final static int RADIUS = 100;
+    private final static int THRESHOLD = 3;
+
+    private LocationManager locationManager;
+    private NotificationManager notificationManager;
+
+    private int lastLevel = 0;
 
     @Override
     public void onCreate() {
         super.onCreate();
+        this.notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        this.locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+
+        //Register for GPS updates
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
     }
 
     @Override
     public void onDestroy() {
-        locationManager.removeUpdates(this);
+        if(locationManager != null) {
+            locationManager.removeUpdates(this);
+        }
         super.onDestroy();
     }
 
@@ -58,6 +71,15 @@ public class WandersafeService extends Service implements LocationListener {
          * 3. Pass that & the location to the api.
          * 4. Check the level against the user's preferences. If it is >=, create an alert.
          */
+
+        int level = getAlertLevel(location.getLatitude(), location.getLongitude(), RADIUS);
+        if(level > lastLevel && level > THRESHOLD) {
+            lastLevel = level;
+            createNotification();
+        }
+        else if(level > 0) {
+            lastLevel = level;
+        }
     }
 
     @Override
@@ -90,8 +112,7 @@ public class WandersafeService extends Service implements LocationListener {
                 .setSound(soundUri)
                 .build();
 
-        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        notificationManager.notify(0, notification);
+        notificationManager.notify(TAG, 0, notification);
     }
 
     /**
