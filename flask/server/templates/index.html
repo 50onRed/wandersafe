@@ -4,13 +4,23 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <title>WanderSafe - Avoid the bad parts of town with our Android App!</title>
   <link rel="icon" type="image/ico" href="/static/favicon.ico">
+  <style type="text/css">
+    body        { text-align: center;font-family:sans-serif; padding-top:150px;}
+    a.btn       { display:inline-block;padding:10px 15px;background:#efaf32;border:1px solid #eda400;border-radius:5px;margin:0 auto;text-decoration:none;color:#fff;font-size:20px; }
+    a.btn:hover { background:#eda400; }
+    img.logo    { margin:0 auto 30px; max-width: 100%; height: auto;}
+    a#safe-link { display: none; }
+  </style>
 </head>
 <body>
   <img src="static/wandersafe-logo.png" alt="WanderSafe" style="position: absolute; left: 50%; top: 50%; margin-top: -80.5px; margin-left: -374.5px;">
+  <a id="safe-link" class="btn">Find out if you're safe.</a>
   <script>
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function(position) {
-            location.href = '/map/' + position.coords.latitude + '/' + position.coords.longitude + '/1000';
+            var safeLink = document.getElementById('safe-link');
+            safeLink.href = '/map/' + position.coords.latitude + '/' + position.coords.longitude + '/5000';
+            safeLink.style.display = 'inline';
         });
     }
   </script>
