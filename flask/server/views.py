@@ -18,6 +18,10 @@ def show_map(lat, lon, meters):
 def process_crime_level(crimes):
     if len(crimes) == 0:
         return 0 # avoid division by zero
-    total = sum([int(crime['ucr_general']) for crime in crimes])
-    return 8 - int(total / 100.0 / len(crimes))
-        
+    sum_of_distances = sum([float(crime['location']['distance']) for crime in crimes])
+    total = sum([weight_crime_level(crime, sum_of_distances, len(crimes)) for crime in crimes])
+    return int(total*len(crimes))/1000
+
+def weight_crime_level(crime, sum_of_distances, num_of_crimes):
+    distance = float(crime['location']['distance'])
+    return (float(crime['ucr_general'])/num_of_crimes)*((sum_of_distances - distance)/sum_of_distances)
