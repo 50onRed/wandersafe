@@ -12,8 +12,8 @@ def main(filename):
             block = line[7]
             code = line[8]
             crime = line[10]
-            lat = line[12]
-            lon = line[13]
+            lon = line[12]
+            lat = line[13]
 
             headers = {
                     'X-StackMob-API-Key': '9f08750f-14b1-4e37-9867-9c54d7f4f0d5',
