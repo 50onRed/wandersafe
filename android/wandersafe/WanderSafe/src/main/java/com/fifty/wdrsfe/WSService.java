@@ -11,6 +11,11 @@ import android.os.IBinder;
 
 public class WSService extends Service implements LocationListener {
 
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        loca
+    }
 
     public IBinder onBind(Intent intent) {
         return null;
