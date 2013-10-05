@@ -15,6 +15,20 @@
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
     <script>
 var map;
+function get_icon(ucr_general_code, text_general_code) {
+  switch(ucr_general_code) {
+    case 100: return "{{ url_for('static', filename='icons/dead.png') }}";
+    case 200: return "{{ url_for('static', filename='icons/rape.png') }}";
+    case 300: 
+      return (text_general_code.indexOf('No Firearm') != -1) ? "{{ url_for('static', filename='icons/rob.png') }}" : "{{ url_for('static', filename='icons/robgun.png') }}";
+    case 400:
+      return (text_general_code.indexOf('No Firearm') != -1) ? "{{ url_for('static', filename='icons/aa.png') }}" : "{{ url_for('static', filename='icons/gun.png') }}";
+    case 500: return "{{ url_for('static', filename='icons/burg.png') }}";
+    case 600: 
+      return (text_general_code.indexOf('Vehicle') != -1) ? "{{ url_for('static', filename='icons/car.png') }}" : "{{ url_for('static', filename='icons/rob.png') }}";
+    case 700: return "{{ url_for('static', filename='icons/car.png') }}";
+  }
+}
 function initialize() {
   var myLoc = new google.maps.LatLng({{ lat }}, {{ lon }});
   var mapOptions = {
@@ -25,7 +39,11 @@ function initialize() {
   map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
   new google.maps.Marker({position: myLoc, map: map, title: 'You are here'});
   {% for crime in crimes %}
-  new google.maps.Marker({position: new google.maps.LatLng({{ crime.location.lat }}, {{ crime.location.lon }}), map: map, title: '{{ crime.text_general_code }}'});
+  new google.maps.Marker({
+    position: new google.maps.LatLng({{ crime.location.lat }}, {{ crime.location.lon }}), 
+    icon: get_icon({{ crime.ucr_general }}, "{{ crime.text_general_code }}"),
+    map: map, title: '{{ crime.text_general_code }}'
+  });
   {% endfor %}
 }
 google.maps.event.addDomListener(window, 'load', initialize);

@@ -16,9 +16,6 @@ def show_map(lat, lon, meters):
     return render_template("map.html", lat=lat, lon=lon, crimes=response)
 
 def process_crime_level(crimes):
-    # This level is not correct
-    # ucr_general is the crime level code, not the num of occurences
-    # TODO: Fix the method of calculating a level
     if len(crimes) == 0:
         return 0 # avoid division by zero
     total = sum([int(crime['ucr_general']) for crime in crimes])
