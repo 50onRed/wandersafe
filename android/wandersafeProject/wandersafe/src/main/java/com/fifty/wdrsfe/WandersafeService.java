@@ -1,5 +1,8 @@
 package com.fifty.wdrsfe;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -77,8 +80,18 @@ public class WandersafeService extends Service implements LocationListener {
         //Not Implemented
     }
 
+    /**
+     * Creates the notification.
+     */
     private void createNotification() {
+        Intent intent = new Intent(this, Main.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
 
+        Notification notification = new Notification.Builder(this)
+                .setContentTitle("Dangerous Area")
+                .setContentIntent(pendingIntent)
+                .build();
+        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
     }
 
     /**
