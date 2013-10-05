@@ -13,8 +13,8 @@ def tell_me_if_im_going_to_die():
     return str(level)
 
 def process_crime_level(crimes):
-    total = 0
-    for crime in crimes:
-        total += int(crime['ucr_general'])/100
-    return total/len(crimes)
+    if len(crimes) == 0:
+        return 0 # avoid division by zero
+    total = sum([int(crime['ucr_general']) / 100 for crime in crimes])
+    return total / len(crimes)
         
