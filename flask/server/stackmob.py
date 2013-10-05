@@ -11,7 +11,6 @@ def get_crime_near(lat, lon, meters):
     params = {
             'location[near]': '{0},{1},{2}'.format(lat, lon, radians)
             }
-    print params
 
     response = requests.get('http://api.stackmob.com/crime', headers=headers, params=params)
 
