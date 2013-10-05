@@ -37,10 +37,11 @@ def main(filename):
                         }
                     })
 
-        response = requests.post('http://api.stackmob.com/crime', headers=headers,
-                data=json.dumps(crime_data))
+        if crime_data:
+            response = requests.post('http://api.stackmob.com/crime', headers=headers,
+                    data=json.dumps(crime_data))
 
-        print response.text
+            print response.text
 
 if __name__ == '__main__':
     import sys
