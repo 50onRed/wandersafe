@@ -37,12 +37,13 @@ function initialize() {
     mapTypeId: google.maps.MapTypeId.ROADMAP
   };
   map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
-  new google.maps.Marker({position: myLoc, map: map, title: 'You are here'});
+  new google.maps.Marker({position: myLoc, icon: "{{ url_for('static', filename='icons/user.png') }}", map: map, title: 'You are here'});
   {% for crime in crimes %}
   new google.maps.Marker({
     position: new google.maps.LatLng({{ crime.location.lat }}, {{ crime.location.lon }}), 
     icon: get_icon({{ crime.ucr_general }}, "{{ crime.text_general_code }}"),
-    map: map, title: '{{ crime.text_general_code }}'
+    map: map, 
+    title: '{{ crime.text_general_code }}'
   });
   {% endfor %}
 }
