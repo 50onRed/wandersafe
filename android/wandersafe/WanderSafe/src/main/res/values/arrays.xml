@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+
+    <string-array name="dangerRadius">
+        <item name="402">Quarter Mile</item>
+        <item name="804">Half Mile</item>
+        <item name="1609">1 Mile</item>
+    </string-array>
+
+    <string-array name="dangerRadiusIntervalValues">
+        <item name="402">402</item>
+        <item name="804">804</item>
+        <item name="1609">1609</item>
+    </string-array>
+
+</resources>

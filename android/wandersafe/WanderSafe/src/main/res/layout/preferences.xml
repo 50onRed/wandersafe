@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ListPreference
+            android:key="pref_syncConnectionType"
+            android:title="Set your Danger Zone radius"
+            android:dialogTitle="Danger Zone radius"
+            android:entries="@array/dangerRadius"
+            android:entryValues="@array/dangerRadiusIntervalValues"
+            android:defaultValue="402" />
+</PreferenceScreen>
