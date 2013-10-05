@@ -21,6 +21,6 @@ def process_crime_level(crimes):
     # TODO: Fix the method of calculating a level
     if len(crimes) == 0:
         return 0 # avoid division by zero
-    total = sum([int(crime['ucr_general']) / 100 for crime in crimes])
-    return total / len(crimes)
+    total = sum([int(crime['ucr_general']) for crime in crimes])
+    return 8 - int(total / 100.0 / len(crimes))
         
