@@ -1,6 +1,5 @@
 package com.fifty.wdrsfe;
 
-
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
@@ -18,7 +17,7 @@ import java.io.InputStreamReader;
 
 public class Utils {
 
-    public static JSONObject getJSONFromURL(String url) throws ClientProtocolException, IOException, JSONException {
+    public static JSONObject getJSONFromURL(String url) throws IOException, JSONException {
         JSONObject responseJSON = null;
         InputStream in = null;
 
@@ -48,5 +47,42 @@ public class Utils {
         }
 
         return responseJSON;
+    }
+
+    public static String getResponseFromURL(String url) throws ClientProtocolException, IOException, JSONException {
+        InputStream in = null;
+        try {
+            HttpClient httpClient = new DefaultHttpClient();
+            HttpGet httpGet = new HttpGet(url);
+            HttpResponse httpResponse = httpClient.execute(httpGet);
+            in = httpResponse.getEntity().getContent();
+
+            //If invalid response type, throw exception
+            if(httpResponse.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+                throw new IOException("Unable to get JSON from URL: "+url);
+            }
+
+            StringBuilder response = new StringBuilder();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+            String line = null;
+            while((line = reader.readLine()) != null) {
+                response.append(line);
+            }
+
+            return response.toString();
+        }
+        finally {
+            if(in != null) { in.close(); }
+        }
+    }
+
+    public static void closeQuietly(InputStream in) {
+        if(in != null) {
+            try {
+                in.close();
+            } catch (IOException e) {
+                //IGNORE
+            }
+        }
     }
 }

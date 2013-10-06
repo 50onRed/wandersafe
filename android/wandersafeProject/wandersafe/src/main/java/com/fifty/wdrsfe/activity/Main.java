@@ -1,5 +1,6 @@
 package com.fifty.wdrsfe.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.app.Activity;
 import android.view.KeyEvent;
@@ -8,16 +9,21 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.fifty.wdrsfe.R;
+import com.fifty.wdrsfe.service.WandersafeService;
 
 public class Main extends Activity {
 
     private WebView mWebView;
 
-    private final static String MAP_URL = "http://www.espn.com";
+    private final static String MAP_URL = "http://www.wandersafe.com";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //Make sure the service is started
+        startService(new Intent(this, WandersafeService.class));
+
         mWebView = new WebView(this);
         mWebView.loadUrl(MAP_URL);
         mWebView.setWebViewClient(new WebViewClient() {

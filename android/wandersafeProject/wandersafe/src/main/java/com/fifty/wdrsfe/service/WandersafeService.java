@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -13,26 +14,23 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.fifty.wdrsfe.R;
 import com.fifty.wdrsfe.Utils;
 import com.fifty.wdrsfe.activity.Main;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-
 public class WandersafeService extends Service implements LocationListener {
 
     private final static String TAG = "WandersafeService";
 
-    private final static String BASE_URL = "";
+    private final static String BASE_URL = "http://www.wandersafe.com/";
 
-    //TODO - Configure the radius / alert threshold
-    private final static int RADIUS = 100;
-    private final static int THRESHOLD = 3;
+    private int radius = 100;
+    private int threshold = 3;
+    private boolean notificationsEnabled = true;
+
 
     private LocationManager locationManager;
     private NotificationManager notificationManager;
@@ -45,8 +43,8 @@ public class WandersafeService extends Service implements LocationListener {
         this.notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         this.locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
-        //Register for GPS updates
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+        loadPreferences();
+        registerLocationListener();
     }
 
     @Override
@@ -63,23 +61,19 @@ public class WandersafeService extends Service implements LocationListener {
 
     @Override
     public void onLocationChanged(Location location) {
-        /**
-         * TODO:
-         *
-         * 1. Check to see if there are any current alerts based on the location
-         * 2. Load the radius threshold from the shared preferences.
-         * 3. Pass that & the location to the api.
-         * 4. Check the level against the user's preferences. If it is >=, create an alert.
-         */
+        int level = getAlertLevel(location.getLatitude(), location.getLongitude(), radius);
+        if(level == -1)
+            return;
 
-        int level = getAlertLevel(location.getLatitude(), location.getLongitude(), RADIUS);
-        if(level > lastLevel && level > THRESHOLD) {
-            lastLevel = level;
+        if(level <= threshold && level < lastLevel) {
+            //Better hide that wallet!
             createNotification();
         }
-        else if(level > 0) {
-            lastLevel = level;
+        else if(level > threshold) {
+            //Clear the notification. Safer neighborhood now.
+            clearNotification();
         }
+        lastLevel = level;
     }
 
     @Override
@@ -101,6 +95,9 @@ public class WandersafeService extends Service implements LocationListener {
      * Creates the notification.
      */
     private void createNotification() {
+        if(!notificationsEnabled)
+            return;
+
         Intent intent = new Intent(this, Main.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
 
@@ -115,6 +112,10 @@ public class WandersafeService extends Service implements LocationListener {
         notificationManager.notify(TAG, 0, notification);
     }
 
+    private void clearNotification(){
+        notificationManager.cancel(TAG, 0);
+    }
+
     /**
      * Gets the alert level based on the geo location and the radius
      * @param latitude
@@ -124,16 +125,26 @@ public class WandersafeService extends Service implements LocationListener {
      */
     private int getAlertLevel(double latitude, double longitude, int radius) {
         int level = -1;
-
         try {
-            JSONObject jsonObject = Utils.getJSONFromURL(BASE_URL + "?latitude=" + latitude + "&longitude=" + longitude + "&radius=" + radius);
-            level = jsonObject.getInt("level");
-        } catch (IOException e) {
-            Log.e(TAG, "Unable to retrieve data", e);
-        } catch (JSONException e) {
-            Log.e(TAG, "Unable to retrieve data", e);
+            String response = Utils.getResponseFromURL(BASE_URL + latitude + "/" + longitude + "/" + radius);
+            if(response != null)
+                level = Integer.parseInt(response.trim());
         }
-
+        catch (Exception e) {
+            Log.e(TAG, "Could not parse level", e);
+        }
         return level;
+    }
+
+    private void registerLocationListener() {
+        //Register for GPS updates
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100, 1, this);
+    }
+
+    private void loadPreferences() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        this.threshold = prefs.getInt("threshold", 3);
+        this.radius = prefs.getInt("radius", 600);
+        this.notificationsEnabled = prefs.getBoolean("notificationsEnabled", true);
     }
 }
