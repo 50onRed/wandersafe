@@ -1,5 +1,5 @@
 from pprint import pprint
-from flask import request, render_template
+from flask import request, render_template, jsonify
 from .stackmob import get_crime_near
 
 def index():
@@ -10,6 +10,10 @@ def tell_me_if_im_going_to_die(lat, lon, meters):
     response = get_crime_near(lat, lon, meters)
     level = process_crime_level(response)
     return str(level)
+
+def get_crimes(lat, lon, meters):
+    lat, lon, meters = float(lat), float(lon), float(meters)
+    return jsonify(*get_crime_near(lat, lon, meters))
 
 def show_map(lat, lon, meters):
     lat, lon, meters = float(lat), float(lon), float(meters)
