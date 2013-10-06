@@ -1,4 +1,3 @@
-from pprint import pprint
 from flask import request, render_template, jsonify
 from .stackmob import get_crime_near
 
@@ -21,7 +20,6 @@ def show_map(lat, lon, meters):
     return render_template("map.html", lat=lat, lon=lon, crimes=response)
 
 def process_crime_level(crimes):
-    pprint(crimes)
     if len(crimes) == 0:
         return 0 # avoid division by zero
     sum_of_distances = sum([float(crime['location']['distance']) for crime in crimes])
@@ -31,4 +29,7 @@ def process_crime_level(crimes):
 
 def weight_crime_level(crime, sum_of_distances):
     distance = float(crime['location']['distance'])
+    print('Distance: {}'.format(distance))
+    print('UCR: {}'.format(float(crime['ucr_general'])))
+    print('Mean: {}'.format(float(crime['ucr_general']) * (sum_of_distances - distance)))
     return float(crime['ucr_general']) * (sum_of_distances - distance)
