@@ -19,7 +19,7 @@
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function(position) {
             var safeLink = document.getElementById('safe-link');
-            safeLink.href = '/map/' + position.coords.latitude + '/' + position.coords.longitude + '/5000';
+            safeLink.href = '/map/' + position.coords.latitude + '/' + position.coords.longitude;
             safeLink.style.display = 'inline';
         });
     }
