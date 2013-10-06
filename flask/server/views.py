@@ -19,8 +19,7 @@ def get_crimes(lat, lon, meters):
 
 def show_map(lat, lon):
     lat, lon = float(lat), float(lon)
-    response = get_crime_near(lat, lon, meters)
-    return render_template("map.html", lat=lat, lon=lon, crimes=response)
+    return render_template("map.html", lat=lat, lon=lon)
 
 def process_crime_level(crimes):
     pprint(crimes)
