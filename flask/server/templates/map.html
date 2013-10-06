@@ -12,6 +12,7 @@
         height: 100%;
       }
     </style>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
     <script>
 var map;
@@ -38,25 +39,28 @@ function initialize() {
   };
   map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
   new google.maps.Marker({position: myLoc, icon: "{{ url_for('static', filename='icons/user.png') }}", map: map, title: 'You are here'});
-  {% for crime in crimes %}
-  var marker = new google.maps.Marker({
-    position: new google.maps.LatLng({{ crime.location.lat }}, {{ crime.location.lon }}), 
-    icon: get_icon({{ crime.ucr_general }}, "{{ crime.text_general_code }}"),
-    map: map, 
-    title: '{{ crime.text_general_code }}'
+  $.getJSON('{{ url_for('get_crimes', lat=lat, lon=lon, meters=5000) }}', function(crimes) {
+	for (var i = 0; i < crimes.length; i++) {
+	  var crime = crimes[i];
+	  var marker = new google.maps.Marker({
+	    position: new google.maps.LatLng(crime.location.lat, crime.location.lon), 
+	    icon: get_icon(crime.ucr_general, crime.text_general_code),
+	    map: map, 
+	    title: crime.text_general_code
+	  });
+	  var infoWindow = new google.maps.InfoWindow({
+	    content: '<div id="content">' + crime.text_general_code + '</div>'
+	  });
+	  google.maps.event.addListener(marker, 'mouseover', function() {
+	    infoWindow.open(map, marker);
+	  });
+	  google.maps.event.addListener(marker, 'mouseout', function() {
+	    infoWindow.close();
+	  });
+	}
   });
-  var infoWindow = new google.maps.InfoWindow({
-    content: '<div id="content">{{ crime.text_general_code }}</div>'
-  });
-  google.maps.event.addListener(marker, 'mouseover', function() {
-    infoWindow.open(map, marker);
-  });
-  google.maps.event.addListener(marker, 'mouseout', function() {
-    infoWindow.close();
-  });
-  {% endfor %}
 }
-google.maps.event.addDomListener(window, 'load', initialize);
+  google.maps.event.addDomListener(window, 'load', initialize);
     </script>
   </head>
   <body>
