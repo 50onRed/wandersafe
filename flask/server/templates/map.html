@@ -53,13 +53,29 @@ function getRadius(map) {
   var dis = r * Math.acos(Math.sin(lat1) * Math.sin(lat2) + Math.cos(lat1) * Math.cos(lat2) * Math.cos(lon2 - lon1));
   return dis;
 }
+function getCenter(map) {
+  var bounds = map.getBounds();
+  if (!bounds) {
+    return null;
+  }
+  var center = bounds.getCenter();
+  return [center.lat(), center.lng()];
+}
 function refresh(map) {
   var marker;
   while (marker = markers.pop()) {
     marker.setMap(null);
   }
   var meters = getRadius(map);
-  var url = '{{ url_for('get_crimes', lat=lat, lon=lon) }}';
+  var center = getCenter(map);
+  if (!center) {
+    var lat = {{ lat }};
+    var lon = {{ lon }};
+  } else {
+    var lat = center[0];
+    var lon = center[1];
+  }
+  var url = '/crimes/' + lat + '/' + lon + '/';
   if (meters) {
      url += meters + '/';
   }
