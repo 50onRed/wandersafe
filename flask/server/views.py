@@ -1,14 +1,14 @@
 from flask import request, render_template, jsonify
 from .stackmob import get_crime_near
-from .config_default import DEBUG
+from .config_default import DEBUG_LEVEL
 import json
 
 def index():
     return render_template("index.html")
 
 def tell_me_if_im_going_to_die(lat, lon, meters):
-    if DEBUG:
-        return '3'
+    if DEBUG_LEVEL:
+        return DEBUG_LEVEL
     lat, lon, meters = float(lat), float(lon), float(meters)
     response = get_crime_near(lat, lon, meters)
     level = process_crime_level(response)

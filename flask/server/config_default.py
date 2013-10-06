@@ -1,1 +1,3 @@
-DEBUG = True
+DEBUG = False
+
+DEBUG_LEVEL = '7'
