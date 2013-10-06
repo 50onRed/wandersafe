@@ -2,7 +2,7 @@ from flask import request, render_template, jsonify, redirect, url_for
 from .stackmob import get_crime_near
 import json
 
-DEBUG_LEVEL = '7'
+DEBUG_LEVEL = None
 
 def index():
     return render_template("index.html")
@@ -35,7 +35,7 @@ def process_crime_level(crimes):
 
 def reset_debug_level(level):
     global DEBUG_LEVEL
-    DEBUG_LEVEL = level
+    DEBUG_LEVEL = None if level == '-1' else level
     return redirect(url_for('tell_me_if_im_going_to_die', lat=39.9708657, lon=-75.1427425, meters=1000))
 
 def weight_crime_level(crime, sum_of_distances):
