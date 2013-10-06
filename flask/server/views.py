@@ -20,7 +20,7 @@ def process_crime_level(crimes):
         return 0 # avoid division by zero
     sum_of_distances = sum([float(crime['location']['distance']) for crime in crimes])
     total = sum([weight_crime_level(crime, sum_of_distances, len(crimes)) for crime in crimes])
-    return int(total*len(crimes))/1000
+    return 8 - int(total*len(crimes))/1000
 
 def weight_crime_level(crime, sum_of_distances, num_of_crimes):
     distance = float(crime['location']['distance'])
