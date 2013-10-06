@@ -92,12 +92,14 @@ function refresh(map) {
         content: '<div id="content">' + crime.text_general_code + '</div>'
       });
       markers.push(marker);
-      google.maps.event.addListener(marker, 'mouseover', function() {
-        infoWindow.open(map, marker);
-      });
-      google.maps.event.addListener(marker, 'mouseout', function() {
-        infoWindow.close();
-      });
+      (function(marker) {
+        google.maps.event.addListener(marker, 'mouseover', function() {
+          infoWindow.open(map, marker);
+        });
+        google.maps.event.addListener(marker, 'mouseout', function() {
+          infoWindow.close();
+        });
+      })(marker);
     }
   });
 }
