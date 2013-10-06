@@ -1,7 +1,8 @@
-from flask import request, render_template, jsonify
+from flask import request, render_template, jsonify, redirect, url_for
 from .stackmob import get_crime_near
-from .config_default import DEBUG_LEVEL
 import json
+
+DEBUG_LEVEL = '7'
 
 def index():
     return render_template("index.html")
@@ -30,6 +31,11 @@ def process_crime_level(crimes):
     total = sum([weight_crime_level(crime, sum_of_distances) for crime in crimes])
     new_sum_of_distances = sum([sum_of_distances - float(crime['location']['distance']) for crime in crimes])
     return 8 - int(total / 100.0 / new_sum_of_distances)
+
+def reset_debug_level(level):
+    global DEBUG_LEVEL
+    DEBUG_LEVEL = level
+    return redirect(url_for('tell_me_if_im_going_to_die', lat=39.9708657, lon=-75.1427425, meters=1000))
 
 def weight_crime_level(crime, sum_of_distances):
     distance = float(crime['location']['distance'])
