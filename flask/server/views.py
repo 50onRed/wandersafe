@@ -8,10 +8,13 @@ def index():
     return render_template("index.html")
 
 def tell_me_if_im_going_to_die(lat, lon, meters):
-    import uwsgi
-    DEBUG_LEVEL = uwsgi.cache_get("DEBUG")
-    if DEBUG_LEVEL is not None:
-        return DEBUG_LEVEL
+    try:
+        import uwsgi
+        DEBUG_LEVEL = uwsgi.cache_get("DEBUG")
+        if DEBUG_LEVEL is not None:
+            return DEBUG_LEVEL
+    except ImportError:
+        pass
     lat, lon, meters = float(lat), float(lon), float(meters)
     response = get_crime_near(lat, lon, meters)
     level = process_crime_level(response)
