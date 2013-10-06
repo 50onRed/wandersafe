@@ -11,7 +11,7 @@ def tell_me_if_im_going_to_die(lat, lon, meters):
     try:
         import uwsgi
         DEBUG_LEVEL = uwsgi.cache_get("DEBUG")
-        if DEBUG_LEVEL is not None and DEBUG_LEVEL != '9':
+        if DEBUG_LEVEL is not None:
             return DEBUG_LEVEL
     except ImportError:
         pass
@@ -40,7 +40,13 @@ def process_crime_level(crimes):
 
 def reset_debug_level(level):
     import uwsgi
-    uwsgi.cache_set("DEBUG", level)
+    if level == '-1':
+        uwsgi.cache_del("DEBUG")
+    else:
+        if uwsgi.cache_exists("DEBUG"):
+            uwsgi.cache_update("DEBUG", level)
+        else:
+            uwsgi.cache_set("DEBUG", level)
     return redirect(url_for('tell_me_if_im_going_to_die', lat=39.9708657, lon=-75.1427425, meters=1000))
 
 def weight_crime_level(crime, sum_of_distances):
