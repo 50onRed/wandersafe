@@ -77,7 +77,7 @@ function refresh(map) {
   }
   var url = '/crimes/' + lat + '/' + lon + '/';
   if (meters) {
-     url += meters + '/';
+     url += meters;
   }
   $.getJSON(url, function(crimes) {
     for (var i = 0; i < crimes.length; i++) {
