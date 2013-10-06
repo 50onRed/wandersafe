@@ -15,7 +15,8 @@ def tell_me_if_im_going_to_die(lat, lon, meters):
     level = process_crime_level(response)
     return str(level)
 
-def get_crimes(lat, lon, meters):
+def get_crimes(lat, lon, meters=None):
+    meters = meters or 5000
     lat, lon, meters = float(lat), float(lon), float(meters)
     l = get_crime_near(lat, lon, meters)
     return json.dumps(l)

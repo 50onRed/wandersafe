@@ -16,6 +16,7 @@
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
     <script>
 var map;
+var markers = [];
 function get_icon(ucr_general_code, text_general_code) {
   switch(ucr_general_code) {
     case 100: return "{{ url_for('static', filename='icons/dead.png') }}";
@@ -30,6 +31,60 @@ function get_icon(ucr_general_code, text_general_code) {
     case 700: return "{{ url_for('static', filename='icons/car.png') }}";
   }
 }
+function getRadius(map) {
+  var bounds = map.getBounds();
+
+  if (!bounds) {
+    return "";
+  }
+
+  var center = bounds.getCenter();
+  var ne = bounds.getNorthEast();
+
+  var r = 6367500.0;
+
+  // Convert lat or lng from decimal degrees into radians (divide by 57.2958)
+  var lat1 = center.lat() / 57.2958; 
+  var lon1 = center.lng() / 57.2958;
+  var lat2 = ne.lat() / 57.2958;
+  var lon2 = ne.lng() / 57.2958;
+
+  // distance = circle radius from center to Northeast corner of bounds
+  var dis = r * Math.acos(Math.sin(lat1) * Math.sin(lat2) + Math.cos(lat1) * Math.cos(lat2) * Math.cos(lon2 - lon1));
+  return dis;
+}
+function refresh(map) {
+  var marker;
+  while (marker = markers.pop()) {
+    marker.setMap(null);
+  }
+  var meters = getRadius(map);
+  var url = '{{ url_for('get_crimes', lat=lat, lon=lon) }}';
+  if (meters) {
+     url += meters + '/';
+  }
+  $.getJSON(url, function(crimes) {
+    for (var i = 0; i < crimes.length; i++) {
+      var crime = crimes[i];
+      var marker = new google.maps.Marker({
+        position: new google.maps.LatLng(crime.location.lat, crime.location.lon), 
+        icon: get_icon(crime.ucr_general, crime.text_general_code),
+        map: map, 
+        title: crime.text_general_code
+      });
+      var infoWindow = new google.maps.InfoWindow({
+        content: '<div id="content">' + crime.text_general_code + '</div>'
+      });
+      markers.push(marker);
+      google.maps.event.addListener(marker, 'mouseover', function() {
+        infoWindow.open(map, marker);
+      });
+      google.maps.event.addListener(marker, 'mouseout', function() {
+        infoWindow.close();
+      });
+    }
+  });
+}
 function initialize() {
   var myLoc = new google.maps.LatLng({{ lat }}, {{ lon }});
   var mapOptions = {
@@ -39,25 +94,9 @@ function initialize() {
   };
   map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
   new google.maps.Marker({position: myLoc, icon: "{{ url_for('static', filename='icons/user.png') }}", map: map, title: 'You are here'});
-  $.getJSON('{{ url_for('get_crimes', lat=lat, lon=lon, meters=5000) }}', function(crimes) {
-	for (var i = 0; i < crimes.length; i++) {
-	  var crime = crimes[i];
-	  var marker = new google.maps.Marker({
-	    position: new google.maps.LatLng(crime.location.lat, crime.location.lon), 
-	    icon: get_icon(crime.ucr_general, crime.text_general_code),
-	    map: map, 
-	    title: crime.text_general_code
-	  });
-	  var infoWindow = new google.maps.InfoWindow({
-	    content: '<div id="content">' + crime.text_general_code + '</div>'
-	  });
-	  google.maps.event.addListener(marker, 'mouseover', function() {
-	    infoWindow.open(map, marker);
-	  });
-	  google.maps.event.addListener(marker, 'mouseout', function() {
-	    infoWindow.close();
-	  });
-	}
+  refresh(map);
+  google.maps.event.addListener(map, 'zoom_changed', function() {
+    refresh(map);
   });
 }
   google.maps.event.addDomListener(window, 'load', initialize);
