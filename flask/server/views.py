@@ -11,7 +11,7 @@ def tell_me_if_im_going_to_die(lat, lon, meters):
     try:
         import uwsgi
         DEBUG_LEVEL = uwsgi.cache_get("DEBUG")
-        if DEBUG_LEVEL is not None and DEBUG_LEVEL != '-1':
+        if DEBUG_LEVEL is not None and DEBUG_LEVEL != '9':
             return DEBUG_LEVEL
     except ImportError:
         pass
